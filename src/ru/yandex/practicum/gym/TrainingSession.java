@@ -16,6 +16,7 @@ public class TrainingSession {
         this.coach = coach;
         this.dayOfWeek = dayOfWeek;
         this.timeOfDay = timeOfDay;
+        coach.increaseCountOfSessions();
     }
 
     public Group getGroup() {
