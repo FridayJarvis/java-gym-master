@@ -8,6 +8,51 @@ import java.util.*;
 public class TimetableTest {
 
     @Test
+    void testAddMultipleSessionsAtSameTime() {
+        Timetable timetable = new Timetable();
+        Coach coach = new Coach("Иванов", "Иван", "Иванович");
+        Group group = new Group("Акробатика для детей", Age.CHILD, 60);
+        TimeOfDay timeOfSession = new TimeOfDay(13, 0);
+
+        TrainingSession trainingSession1 = new TrainingSession(group, coach, DayOfWeek.MONDAY, timeOfSession);
+        TrainingSession trainingSession2 = new TrainingSession(group, coach, DayOfWeek.MONDAY, timeOfSession);
+
+        timetable.addNewTrainingSession(trainingSession1);
+        timetable.addNewTrainingSession(trainingSession2);
+
+        HashSet<TrainingSession> sessions = timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY, timeOfSession);
+        assertNotNull(sessions);
+        assertEquals(2, sessions.size());
+        assertTrue(sessions.contains(trainingSession1));
+        assertTrue(sessions.contains(trainingSession2));
+    }
+
+    @Test
+    void testNonExistingTimeInExistingDay() {
+        Timetable timetable = new Timetable();
+
+        Group group = new Group("Акробатика для детей", Age.CHILD, 60);
+        Coach coach = new Coach("Васильев", "Николай", "Сергеевич");
+        TrainingSession session = new TrainingSession(group, coach,
+                DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+
+        timetable.addNewTrainingSession(session);
+
+        HashSet<TrainingSession> sessions = timetable.getTrainingSessionsForDayAndTime(
+                DayOfWeek.MONDAY, new TimeOfDay(13, 1));
+
+        assertNull(sessions);
+    }
+
+    @Test
+    void testEmptyTimetable() {
+        Timetable timetable = new Timetable();
+
+        assertNull(timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY));
+        assertNull(timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY, new TimeOfDay(13, 0)));
+    }
+
+    @Test
     void testGetTrainingSessionsForDaySingleSession() {
         Timetable timetable = new Timetable();
 
@@ -99,5 +144,59 @@ public class TimetableTest {
         HashSet<TrainingSession> sessionsAt14Monday = timetable.getTrainingSessionsForDayAndTime(
                 DayOfWeek.MONDAY, new TimeOfDay(14, 0));
         assertNull(sessionsAt14Monday);
+    }
+
+    @Test
+    void shouldReturnStringWithCoachAnd1Session() {
+        Timetable timetable = new Timetable();
+
+        Group group = new Group("Акробатика для детей", Age.CHILD, 60);
+        Coach coach = new Coach("Васильев", "Николай", "Сергеевич");
+        TrainingSession session = new TrainingSession(group, coach,
+                DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+
+        timetable.addNewTrainingSession(session);
+
+        assertEquals(coach + " - занятий: " + 1 + "\n", timetable.getCountSessionsByCoaches());
+    }
+
+    @Test
+    void shouldReturnStringWithCoachAnd2Session() {
+        Timetable timetable = new Timetable();
+
+        Group group = new Group("Акробатика для детей", Age.CHILD, 60);
+        Coach coach = new Coach("Васильев", "Николай", "Сергеевич");
+        TrainingSession session1 = new TrainingSession(group, coach,
+                DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+        TrainingSession session2 = new TrainingSession(group, coach,
+                DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+
+        timetable.addNewTrainingSession(session1);
+        timetable.addNewTrainingSession(session2);
+
+        assertEquals(coach + " - занятий: " + 2 + "\n", timetable.getCountSessionsByCoaches());
+    }
+
+    @Test
+    void shouldReturnStringWith2CoachBySessionsCount() {
+        Timetable timetable = new Timetable();
+
+        Group group = new Group("Акробатика для детей", Age.CHILD, 60);
+        Coach coach = new Coach("Васильев", "Николай", "Сергеевич");
+        TrainingSession session1 = new TrainingSession(group, coach,
+                DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+        TrainingSession session2 = new TrainingSession(group, coach,
+                DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+        Coach coach1 = new Coach("Иванов", "Иван", "Иванович");
+        TrainingSession session3 = new TrainingSession(group, coach1,
+                DayOfWeek.TUESDAY, new TimeOfDay(15, 30));
+
+        timetable.addNewTrainingSession(session3);
+
+        timetable.addNewTrainingSession(session1);
+        timetable.addNewTrainingSession(session2);
+
+        assertEquals(coach + " - занятий: " + 2 + "\n" +
+                        coach1 + " - занятий: " + 1 + "\n", timetable.getCountSessionsByCoaches());
     }
 }

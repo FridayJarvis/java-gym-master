@@ -1,12 +1,11 @@
 package ru.yandex.practicum.gym;
 
-import com.sun.source.tree.Tree;
-
 import java.util.*;
 
 public class Timetable {
 
     private HashMap<DayOfWeek, TreeMap<TimeOfDay, HashSet<TrainingSession>>> timetable = new HashMap<>();
+    private TreeSet<Coach> coachesByCountSessions = new TreeSet<>();
 
     public void addNewTrainingSession(TrainingSession trainingSession) {
         //сохраняем занятие в расписании
@@ -23,6 +22,7 @@ public class Timetable {
         }
 
         sessionsForTime.add(trainingSession);
+        coachesByCountSessions.add(trainingSession.getCoach());
     }
 
     public TreeMap<TimeOfDay, HashSet<TrainingSession>> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
@@ -38,5 +38,14 @@ public class Timetable {
         }
 
         return sessionsForDay.get(timeOfDay);
+    }
+
+    public String getCountSessionsByCoaches() {
+        String result = "";
+        for (Coach coach : coachesByCountSessions) {
+            result += coach + " - занятий: " + coach.getCountOfSessions() + "\n";
+        }
+
+        return result;
     }
 }
