@@ -1,6 +1,5 @@
 package ru.yandex.practicum.gym;
 
-import java.util.Comparator;
 import java.util.Objects;
 
 public class Coach implements Comparable<Coach> {
